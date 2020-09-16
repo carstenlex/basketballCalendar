@@ -1,2 +1,7 @@
 # Project exclude paths
 /target/
+/src/main/resources/credentials.json
+/src/main/resources/GCLOUD_credentials.json
+/basketballCalendar.iml
+/.idea/
+/tokens/StoredCredential
