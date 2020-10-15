@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static de.carstenlex.Configuration.AUTO_SYNC_MARKER;
+
 @Log
 public class Spielplan {
 
@@ -65,7 +67,6 @@ public class Spielplan {
 }
 
 @Data
-@ToString
 @NoArgsConstructor
 class Spiel {
     LocalDateTime datumUhrzeit;
@@ -84,9 +85,37 @@ class Spiel {
         if (teamAuswaerts.equalsIgnoreCase("Oberthurgau Pirates")){
             teamAuswaerts = mannschaft.getShortName();
         }
+        teamAuswaerts = anpassungPiratesVSPirates(mannschaft,teamHeim, teamAuswaerts);
+
         halle = extractHalle(rawString);
 
         this.mannschaft = mannschaft;
+    }
+
+    /**
+     * Im Basketplan werden leider nicht die Mannschaftsnamen ausgegeben, sondern nur die Vereinsnamen;
+     * Da unsere H1 und H2 gegeneinander in derselben Liga spielen, kann man sie nicht unterscheiden.
+     * Für diesen Spezialfall machen wir eine Anpassung.
+     * @param mannschaft
+     * @param teamHeim
+     * @param teamAuswaerts
+     * @return
+     */
+    private String anpassungPiratesVSPirates(Mannschaft mannschaft,String teamHeim, String teamAuswaerts) {
+        if (teamHeim ==null || teamAuswaerts == null) {
+            return null;
+        }
+
+        if (teamHeim.equalsIgnoreCase(teamAuswaerts)) {
+            if (mannschaft == Mannschaft.HERREN1){
+                return Mannschaft.HERREN_SEN.getShortName();
+            }
+            if (mannschaft == Mannschaft.HERREN_SEN){
+                return Mannschaft.HERREN1.getShortName();
+            }
+        }
+
+        return teamAuswaerts;
     }
 
     private String extractTeamHeim(String rawString) {
@@ -136,5 +165,15 @@ class Spiel {
     public String getEndeZeitForCalendar() {
         ZonedDateTime zonedDateTime = ZonedDateTime.of(datumUhrzeit.plusHours(2), ZoneId.systemDefault());
         return zonedDateTime.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+    }
+
+    @Override
+    public String toString() {
+        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm");
+        return mannschaft.getShortName() +"-Spiel am " + dateFormat.format(datumUhrzeit) + " um "+timeFormat.format(datumUhrzeit)+" Uhr\n"+
+                teamHeim + " gegen " + teamAuswaerts +"\n" +
+                "Ort: " + halle + "\n" +
+                AUTO_SYNC_MARKER; // Der hier ist wichtig: nur Termine mit diesem Text in der Description werden auch wieder beim Clear gelöscht
     }
 }

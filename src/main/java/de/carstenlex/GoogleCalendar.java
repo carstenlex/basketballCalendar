@@ -37,6 +37,11 @@ public class GoogleCalendar {
     }
 
 
+    /**
+     * Es werden NUR diejenigen Termine gelöscht, die auch den @see Configuration.AUTO_SYNC_MARKER in der description enthalten
+     * @param calendarBasketball
+     * @throws IOException
+     */
     public void clear(CalendarListEntry calendarBasketball) throws IOException {
         //clear geht nur bei primary calendar, daher hier umständlich
         String pageToken = null;
@@ -45,10 +50,16 @@ public class GoogleCalendar {
             List<Event> items = events.getItems();
 
             for (Event event : items) {
-                service.events().delete(calendarBasketball.getId(), event.getId()).execute();
+                if (istAutoSyncEvent(event)) {
+                    service.events().delete(calendarBasketball.getId(), event.getId()).execute();
+                }
             }
             pageToken = events.getNextPageToken();
         } while (pageToken != null);
+    }
+
+    private boolean istAutoSyncEvent(Event event) {
+        return event.getDescription()!=null && event.getDescription().contains(Configuration.AUTO_SYNC_MARKER);
     }
 
     public CalendarListEntry findCalendarBasketball() throws IOException {
