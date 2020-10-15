@@ -40,16 +40,18 @@ public class BasketballCalendarSync {
 
         log.info("Spiele laden und Termine eintragen...");
         Spielplan spielplan = new Spielplan();
+        BasketballHeimspieleToFile heimspiele = new BasketballHeimspieleToFile();
         for (Mannschaft mannschaft : Mannschaft.values()) {
             System.out.println("===========================");
             System.out.println("Mannschaft: "+mannschaft);
             System.out.println("===========================");
             List<Spiel> spiele = spielplan.loadFromBasketplan(mannschaft);
-            spiele.forEach(spiel -> log.info(spiel.toString()));
+            //spiele.forEach(spiel -> log.info(spiel.toString()));
             calendar.erstelleTermineInKalender( calendarBasketball, spiele);
+            heimspiele.addHeimspiele(spiele);
         }
-
         log.info("Terminübertragung fertig!");
+        heimspiele.toFile("heimspiele.csv");
     }
 
 

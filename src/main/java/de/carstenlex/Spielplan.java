@@ -74,16 +74,19 @@ class Spiel {
     String teamAuswaerts;
     String halle;
     private Mannschaft mannschaft;
+    boolean heimspiel;
 
     public Spiel(String rawString, Mannschaft mannschaft) throws ParseException {
         datumUhrzeit = extractDate(rawString);
         teamHeim = extractTeamHeim(rawString);
         if (teamHeim.equalsIgnoreCase("Oberthurgau Pirates")){
             teamHeim = mannschaft.getShortName();
+            heimspiel = true;
         }
         teamAuswaerts = extractTeamAuswaerts(rawString);
         if (teamAuswaerts.equalsIgnoreCase("Oberthurgau Pirates")){
             teamAuswaerts = mannschaft.getShortName();
+            heimspiel = false;
         }
         teamAuswaerts = anpassungPiratesVSPirates(mannschaft,teamHeim, teamAuswaerts);
 
@@ -107,6 +110,7 @@ class Spiel {
         }
 
         if (teamHeim.equalsIgnoreCase(teamAuswaerts)) {
+            heimspiel = true;
             if (mannschaft == Mannschaft.HERREN1){
                 return Mannschaft.HERREN_SEN.getShortName();
             }
@@ -175,5 +179,12 @@ class Spiel {
                 teamHeim + " gegen " + teamAuswaerts +"\n" +
                 "Ort: " + halle + "\n" +
                 AUTO_SYNC_MARKER; // Der hier ist wichtig: nur Termine mit diesem Text in der Description werden auch wieder beim Clear gelöscht
+    }
+
+    public static String toCSV(Spiel spiel) {
+        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm");
+        DateTimeFormatter wochentag = DateTimeFormatter.ofPattern("EEEE");
+        return wochentag.format(spiel.datumUhrzeit)+";"+dateFormat.format(spiel.datumUhrzeit)+";"+timeFormat.format(spiel.datumUhrzeit)+";"+spiel.mannschaft.getShortName()+";"+spiel.teamAuswaerts+";"+spiel.halle+";;;";
     }
 }
