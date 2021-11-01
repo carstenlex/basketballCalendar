@@ -6,7 +6,8 @@ Applikation BasketballCalendarSync:
 Es wird ein Kalender mit Namen Basketballspiel gesucht
 
 Web-OAuth erfolgt über ein Browserfenster, wenn der Service das erste mal gestartet wird.
-Nach erfolgreicher OAUTH über Webbrowser-Fenster wird im Ordner tokens ein File erstellt
+Nach erfolgreicher OAUTH über Webbrowser-Fenster wird im Ordner tokens ein File erstellt.
+Aktuell den Account carsten.lex@gmail.com verwenden und alle Rechte erlauben.
 
 Falls es einen Access denied geben sollte beim Anlegen der Termine, 
 dann einfach das File im tokens-Ordner löschen
