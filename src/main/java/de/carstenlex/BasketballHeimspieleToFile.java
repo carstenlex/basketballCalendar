@@ -8,7 +8,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
+import static java.util.function.Predicate.not;
+
 @Log
 public class BasketballHeimspieleToFile {
 
@@ -31,15 +35,36 @@ public class BasketballHeimspieleToFile {
             System.out.println("===========================");
             List<Spiel> spiele = spielplan.loadFromBasketplan(mannschaft);
             //spiele.forEach(spiel -> log.info(spiel.toString()));
-            heimspiele.addHeimspiele(spiele);
+            if (args[0].equalsIgnoreCase("heim")) {
+                heimspiele.addHeimspiele(spiele);
+            }else if (args[0].equalsIgnoreCase("auswaerts")) {
+                heimspiele.addAuswaertsspiele(spiele);
+            }else if (args[0].equalsIgnoreCase("alle")) {
+                heimspiele.addAlleSpiele(spiele);
+            }
         }
         log.info("Terminübertragung fertig!");
-        heimspiele.toFile("heimspiele.csv");
+        if (args[0].equalsIgnoreCase("heim")) {
+            heimspiele.toFile("heimspiele.csv");
+        }else if (args[0].equalsIgnoreCase("auswaerts")) {
+            heimspiele.toFile("auswaertsspiele.csv");
+        }else if (args[0].equalsIgnoreCase("alle")) {
+            heimspiele.toFile("allespiele.csv");
+        }
+
     }
 
+    private BasketballHeimspieleToFile addAuswaertsspiele(List<Spiel> list) {
+        if (list != null) {
+            alleHeimspiele.addAll(list.stream().filter(not(Spiel::isHeimspiel)).collect(Collectors.toList()));
+        }
+        return this;
+    }
 
-
-
+    private BasketballHeimspieleToFile addAlleSpiele(List<Spiel> spiele) {
+        alleHeimspiele.addAll(spiele);
+        return this;
+    }
 
 
     public BasketballHeimspieleToFile addHeimspiele(List<Spiel> list) {
