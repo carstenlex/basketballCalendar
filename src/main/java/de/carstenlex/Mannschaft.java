@@ -3,14 +3,16 @@ package de.carstenlex;
 public enum Mannschaft {
 
     // SHortname zur Anzeige im Calendar; liga=id im Basketplan und team = id im Basketplan
-    HERREN1("H1",7737,5310),
-    HERREN_SEN("H2",7204,5485),
-    HU18("U18",7975,5311),
-    HU12("U12",7729,5312),
-    HU14("U14",7727,5369),
+    HERREN1("H1",8279,5310),
+    HU18("U18",8290,5311),
+    HU12("U12",8310,5312),
+    HU12_2("U12-2",8310,6236),
+    HU14("HU14",8296,6437),
+    MixU14("HU14",8309,5369),
+    DU14("DU14",8452,5491),
     HU16("U16",7960,5488),
     //HU09("U10",7236,5313),
-    MIX("Mix",7984,5489);
+    MIX("Mix",8314,5489);
 
 
     private String shortName;

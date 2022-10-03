@@ -1,5 +1,8 @@
 Liest Kalender aus einem Google-Konto aus.
 
+Wie finde ich die MannschaftsId?
+---
+Basketplan
 
 Applikation BasketballCalendarSync:
 ---

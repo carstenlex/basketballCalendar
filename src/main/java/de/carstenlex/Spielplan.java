@@ -88,7 +88,7 @@ class Spiel {
             teamAuswaerts = mannschaft.getShortName();
             heimspiel = false;
         }
-        teamAuswaerts = anpassungPiratesVSPirates(mannschaft,teamHeim, teamAuswaerts);
+        // teamAuswaerts = anpassungPiratesVSPirates(mannschaft,teamHeim, teamAuswaerts);
 
         halle = extractHalle(rawString);
 
@@ -109,15 +109,18 @@ class Spiel {
             return null;
         }
 
-        if (teamHeim.equalsIgnoreCase(teamAuswaerts)) {
+
+
+       /* if (teamHeim.equalsIgnoreCase(teamAuswaerts)) {
             heimspiel = true;
-            if (mannschaft == Mannschaft.HERREN1){
+           *//* if (mannschaft == Mannschaft.HERREN1){
                 return Mannschaft.HERREN_SEN.getShortName();
             }
             if (mannschaft == Mannschaft.HERREN_SEN){
                 return Mannschaft.HERREN1.getShortName();
-            }
-        }
+            }*//*
+            return Mannschaft.HERREN1.getShortName();
+        }*/
 
         return teamAuswaerts;
     }
@@ -185,6 +188,6 @@ class Spiel {
         DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd.MM.yyyy");
         DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm");
         DateTimeFormatter wochentag = DateTimeFormatter.ofPattern("EEEE");
-        return wochentag.format(spiel.datumUhrzeit)+";"+dateFormat.format(spiel.datumUhrzeit)+";"+timeFormat.format(spiel.datumUhrzeit)+";"+spiel.mannschaft.getShortName()+";"+spiel.teamAuswaerts+";"+spiel.halle+";;;";
+        return wochentag.format(spiel.datumUhrzeit)+";"+dateFormat.format(spiel.datumUhrzeit)+";"+timeFormat.format(spiel.datumUhrzeit)+";"+spiel.teamHeim+";"+spiel.teamAuswaerts+";"+spiel.halle+";;;";
     }
 }
