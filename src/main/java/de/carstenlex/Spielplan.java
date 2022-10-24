@@ -60,7 +60,7 @@ public class Spielplan {
                 log.warning(e.getMessage());
             }
         }
-
+        System.out.println("Anzahl Spiele: "+ liste.size());
 
         return liste;
     }
