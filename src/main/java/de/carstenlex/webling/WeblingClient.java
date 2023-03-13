@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.carstenlex.Mannschaft;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -12,6 +13,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -20,6 +22,12 @@ import java.util.stream.Collectors;
 public class WeblingClient {
 
     public static void main(String[] args) throws URISyntaxException, IOException, InterruptedException {
+
+        int startSaison = Calendar.getInstance().get(Calendar.YEAR);
+        if (args.length > 0){
+            startSaison = Integer.parseInt(args[1]);
+        }
+
         HttpClient client = HttpClient.newHttpClient();
 
         HttpRequest.Builder getMemeber = HttpRequest.newBuilder(new URI("https://bbotg.webling.ch/api/1/member?format=full")).GET().header("apikey", "417a9001b785a51096bde529f7705dd0");
@@ -35,10 +43,19 @@ public class WeblingClient {
         System.out.println(body);
 
 
-        for(Mannschaft mannschaft: Mannschaft.values()) {
-            List<Member> u14m = list(members, mannschaft, 2022);//Saison 22 -> Jahrgang 09/10
-            System.out.println("======== "+mannschaft+" ============");
-            u14m.stream().forEach(m -> System.out.println(m.vorname + " " + m.getName()));
+        try(FileWriter fileWriter = new FileWriter("Saison_"+startSaison+".csv")) {
+            for (Mannschaft mannschaft : Mannschaft.values()) {
+                List<Member> u14m = list(members, mannschaft, startSaison);//Saison 22 -> Jahrgang 09/10
+                String mannschaftHeader = "======== " + mannschaft + " ============";
+                System.out.println(mannschaftHeader);
+                fileWriter.write(mannschaftHeader+"\n");
+                String csv = u14m.stream()
+                        .map(m -> m.vorname + ";" + m.getName() + ";" + m.jahrgang()+";"+m.getGeschlecht())
+                        .collect(Collectors.joining("\n"));
+                System.out.println(csv);
+                fileWriter.write(csv);
+                fileWriter.write("\n");
+            }
         }
     }
 

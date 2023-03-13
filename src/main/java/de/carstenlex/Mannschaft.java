@@ -10,6 +10,7 @@ public enum Mannschaft {
     HU14("HU14",8596,6437,true,"m",12,13),
     MixU14("U14-Mix",8309,5369,true,"mix",12,13),
     DU14("DU14",8604,5491,true,"w",12,13),
+    DU16("DU16",0,0,true,"w",14,15),
     HU16("HU16",8591,5488,true,"m",14,15),
     //HU09("U10",7236,5313),
     MIX("Mix",8314,5489,false,"mix",18,99);
