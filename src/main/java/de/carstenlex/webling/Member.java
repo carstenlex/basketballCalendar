@@ -19,6 +19,7 @@ public class Member {
     private String name;
     private Date geburtstag;
     private String geschlecht;
+    private String standort;
 
     String status;
 
@@ -51,6 +52,7 @@ public int jahrgang(){
         this.id = (Integer) properties.get("Mitglieder ID");
         this.geschlecht = (String)properties.get("Geschlecht");
         this.status = (String)properties.get("Status");
+        this.standort = (String)properties.get("Standort");
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 

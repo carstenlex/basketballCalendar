@@ -50,7 +50,7 @@ public class WeblingClient {
                 System.out.println(mannschaftHeader);
                 fileWriter.write(mannschaftHeader+"\n");
                 String csv = u14m.stream()
-                        .map(m -> m.vorname + ";" + m.getName() + ";" + m.jahrgang()+";"+m.getGeschlecht())
+                        .map(m -> m.vorname + ";" + m.getName() + ";" + m.jahrgang()+";"+m.getGeschlecht()+";"+m.getStandort())
                         .collect(Collectors.joining("\n"));
                 System.out.println(csv);
                 fileWriter.write(csv);
@@ -58,6 +58,8 @@ public class WeblingClient {
             }
         }
     }
+
+    
 
     private static List<Member> list(Member[] members, Mannschaft mannschaft, int startSaison) {
 

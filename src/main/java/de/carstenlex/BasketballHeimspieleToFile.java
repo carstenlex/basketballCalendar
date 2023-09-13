@@ -5,6 +5,7 @@ import lombok.extern.java.Log;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -19,6 +20,8 @@ public class BasketballHeimspieleToFile {
     public static final String HEADER ="Tag;Datum;Uhrzeit;Mannschaft;Gegner;Halle;Uhr;Matchblatt;Bemerkung";
 
     List<Spiel> alleHeimspiele = new ArrayList<>();
+
+    public boolean ignoreVergangeneSpiele = true;
 
 
     public static void main(String... args) throws IOException {
@@ -69,7 +72,17 @@ public class BasketballHeimspieleToFile {
 
     public BasketballHeimspieleToFile addHeimspiele(List<Spiel> list) {
         if (list != null) {
-            alleHeimspiele.addAll(list.stream().filter(Spiel::isHeimspiel).collect(Collectors.toList()));
+            alleHeimspiele.addAll(list.stream()
+                    .filter(Spiel::isHeimspiel)
+                            .filter(spiel -> {
+                                if(ignoreVergangeneSpiele){
+                                    return spiel.datumUhrzeit.isAfter(LocalDateTime.now()); // nur die in der Zukunft
+                                }else{
+                                    return true; // alle Spiele
+                                }
+
+                            })
+                    .collect(Collectors.toList()));
         }
         return this;
     }
