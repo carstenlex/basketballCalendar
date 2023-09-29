@@ -47,6 +47,8 @@ public class BasketballHeimspieleToFile {
             }
         }
         log.info("Terminübertragung fertig!");
+
+
         if (args[0].equalsIgnoreCase("heim")) {
             heimspiele.toFile("heimspiele.csv");
         }else if (args[0].equalsIgnoreCase("auswaerts")) {
@@ -64,8 +66,16 @@ public class BasketballHeimspieleToFile {
         return this;
     }
 
-    private BasketballHeimspieleToFile addAlleSpiele(List<Spiel> spiele) {
-        alleHeimspiele.addAll(spiele);
+    private BasketballHeimspieleToFile addAlleSpiele(List<Spiel> list) {
+        alleHeimspiele.addAll(list.stream().filter(spiel -> {
+                    if(ignoreVergangeneSpiele){
+                        return spiel.datumUhrzeit.isAfter(LocalDateTime.now()); // nur die in der Zukunft
+                    }else{
+                        return true; // alle Spiele
+                    }
+
+                })
+                .collect(Collectors.toList()));
         return this;
     }
 
