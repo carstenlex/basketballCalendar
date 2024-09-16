@@ -1,12 +1,25 @@
+Kalender zur neuen Saison aktualisieren
+---
+Zur neuen Saison alle Mannschaften konfigurieren und die ligaId updaten.
+
+
+
 Liest Kalender aus einem Google-Konto aus.
 
 Wie finde ich die MannschaftsId?
 ---
-Basketplan
+Basketplan:
+- Auf der Übersichtsseite unten links das Team anklicken. Der URL-Parameter teamId. Diese ID verändert sich nicht
+
+Wie finde ich die Liga-ID?
+---
+basketplan
+- Wenn man auf der Team-Seite ist, dann unten links auf Meisterschaft klicken und dann auf der Folgeseite die Saison auswählen.
+- Der URL-Parameter leagueHoldiongId ist der gesuchte Parameter
 
 Applikation BasketballCalendarSync:
 ---
-Es wird ein Kalender mit Namen Basketballspiel gesucht
+Es wird ein Kalender mit Namen Basketballspiele gesucht
 
 Web-OAuth erfolgt über ein Browserfenster, wenn der Service das erste mal gestartet wird.
 Nach erfolgreicher OAUTH über Webbrowser-Fenster wird im Ordner tokens ein File erstellt.

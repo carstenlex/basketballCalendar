@@ -1,25 +1,22 @@
 package de.carstenlex;
 
-import com.google.api.services.calendar.model.CalendarListEntry;
-
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static java.util.function.Predicate.not;
 
-public class BasketballHeimspieleToFile {
+public class BasketballSpieleToFile {
 
-    private static Logger log = Logger.getLogger(BasketballHeimspieleToFile.class.getName());
+    private static Logger log = Logger.getLogger(BasketballSpieleToFile.class.getName());
 
 
-    public static final String HEADER ="Tag;Datum;Uhrzeit;Mannschaft;Gegner;Halle;Uhr;Matchblatt;Bemerkung";
+    public static final String HEADER ="Team;Tag;Datum;Uhrzeit;Mannschaft;Gegner;Halle;Uhr;Matchblatt;Bemerkung";
 
     List<Spiel> alleHeimspiele = new ArrayList<>();
 
@@ -29,46 +26,49 @@ public class BasketballHeimspieleToFile {
     public static void main(String... args) throws IOException {
         log.info("Starte Heimspiele als CSV aus Basketplan lesen");
 
-
+        String spielart = "alle";
+        if (args != null && args.length > 0) {
+            spielart = args[0];
+        }
 
         log.info("Spiele laden ...");
         Spielplan spielplan = new Spielplan();
-        BasketballHeimspieleToFile heimspiele = new BasketballHeimspieleToFile();
+        BasketballSpieleToFile heimspiele = new BasketballSpieleToFile();
         for (Mannschaft mannschaft : Mannschaft.values()) {
             System.out.println("===========================");
             System.out.println("Mannschaft: "+mannschaft);
             System.out.println("===========================");
             List<Spiel> spiele = spielplan.loadFromBasketplan(mannschaft);
             //spiele.forEach(spiel -> log.info(spiel.toString()));
-            if (args[0].equalsIgnoreCase("heim")) {
+            if (spielart.equalsIgnoreCase("heim")) {
                 heimspiele.addHeimspiele(spiele);
-            }else if (args[0].equalsIgnoreCase("auswaerts")) {
+            }else if (spielart.equalsIgnoreCase("auswaerts")) {
                 heimspiele.addAuswaertsspiele(spiele);
-            }else if (args[0].equalsIgnoreCase("alle")) {
+            }else if (spielart.equalsIgnoreCase("alle")) {
                 heimspiele.addAlleSpiele(spiele);
             }
         }
         log.info("Terminübertragung fertig!");
 
 
-        if (args[0].equalsIgnoreCase("heim")) {
+        if (spielart.equalsIgnoreCase("heim")) {
             heimspiele.toFile("heimspiele.csv");
-        }else if (args[0].equalsIgnoreCase("auswaerts")) {
+        }else if (spielart.equalsIgnoreCase("auswaerts")) {
             heimspiele.toFile("auswaertsspiele.csv");
-        }else if (args[0].equalsIgnoreCase("alle")) {
+        }else if (spielart.equalsIgnoreCase("alle")) {
             heimspiele.toFile("allespiele.csv");
         }
 
     }
 
-    private BasketballHeimspieleToFile addAuswaertsspiele(List<Spiel> list) {
+    private BasketballSpieleToFile addAuswaertsspiele(List<Spiel> list) {
         if (list != null) {
             alleHeimspiele.addAll(list.stream().filter(not(Spiel::isHeimspiel)).collect(Collectors.toList()));
         }
         return this;
     }
 
-    private BasketballHeimspieleToFile addAlleSpiele(List<Spiel> list) {
+    private BasketballSpieleToFile addAlleSpiele(List<Spiel> list) {
         alleHeimspiele.addAll(list.stream().filter(spiel -> {
                     if(ignoreVergangeneSpiele){
                         return spiel.datumUhrzeit.isAfter(LocalDateTime.now()); // nur die in der Zukunft
@@ -82,7 +82,7 @@ public class BasketballHeimspieleToFile {
     }
 
 
-    public BasketballHeimspieleToFile addHeimspiele(List<Spiel> list) {
+    public BasketballSpieleToFile addHeimspiele(List<Spiel> list) {
         if (list != null) {
             alleHeimspiele.addAll(list.stream()
                     .filter(Spiel::isHeimspiel)

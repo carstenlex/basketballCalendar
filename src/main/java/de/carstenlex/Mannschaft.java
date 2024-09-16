@@ -3,16 +3,17 @@ package de.carstenlex;
 public enum Mannschaft {
 
     // SHortname zur Anzeige im Calendar; liga=id im Basketplan und team = id im Basketplan
-    HERREN1("H1",9048,5310, false,"m",18,99),
-    HU18("U18",9105,5311,true,"m",16,17),
-    HU12("U12",8310,5312,true,"mix",10,11),
+    HERREN1("Herren",9879,5310, false,"m",18,99),
+    //HU18("U18",9105,5311,true,"m",16,17),
+    HU12("U12",9872,5312,true,"mix",10,11),
     //HU12_2("U12-2",8310,6236,true,"mix",10,11),
-    HU14("HU14",9118,6437,true,"m",12,13),
-    //MixU14("U14-Mix",9118,5369,true,"mix",12,13),
+    HU14("HU14",9884,6437,true,"m",12,13),
+    MixU14("U14-Mix",9874,7259,true,"mix",12,13),
     //DU14("DU14",8604,5491,true,"w",12,13),
-    DU16("DU16",9092,6849,true,"w",14,15),
-    HU16("HU16",9112,5488,true,"m",14,15);
-    //HU09("U10",7236,5313),
+    DU18("DU16",9927,6849,true,"w",14,17),
+    HU16("HU16",9902,5488,true,"m",14,15),
+    U10("U10",7236,5313,true,"mix",8,9),
+    U8("U8",9870,6092,true,"mix",7,6);
     //MIX("Mix",8314,5489,false,"mix",18,99);
 
 

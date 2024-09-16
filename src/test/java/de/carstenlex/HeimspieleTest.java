@@ -16,7 +16,7 @@ public class HeimspieleTest extends BaseTest{
         System.out.println("parse spiele");
         List<Spiel> spiele = spielplan.parseSpiele(content, Mannschaft.HERREN1);
 
-        BasketballHeimspieleToFile heimspiele = new BasketballHeimspieleToFile();
+        BasketballSpieleToFile heimspiele = new BasketballSpieleToFile();
         heimspiele.addHeimspiele(spiele);
 
         Assertions.assertEquals(8,heimspiele.size());

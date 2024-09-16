@@ -187,7 +187,7 @@ class Spiel {
         DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd.MM.yyyy");
         DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm");
         DateTimeFormatter wochentag = DateTimeFormatter.ofPattern("EEEE");
-        return wochentag.format(spiel.datumUhrzeit)+";"+dateFormat.format(spiel.datumUhrzeit)+";"+timeFormat.format(spiel.datumUhrzeit)+";"+spiel.teamHeim+";"+spiel.teamAuswaerts+";"+spiel.halle+";;;";
+        return spiel.mannschaft+";"+wochentag.format(spiel.datumUhrzeit)+";"+dateFormat.format(spiel.datumUhrzeit)+";"+timeFormat.format(spiel.datumUhrzeit)+";"+spiel.teamHeim+";"+spiel.teamAuswaerts+";"+spiel.halle+";;;";
     }
 
 

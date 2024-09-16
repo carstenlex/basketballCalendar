@@ -41,7 +41,7 @@ public class BasketballCalendarSync {
 
         log.info("Spiele laden und Termine eintragen...");
         Spielplan spielplan = new Spielplan();
-        BasketballHeimspieleToFile heimspiele = new BasketballHeimspieleToFile();
+        BasketballSpieleToFile heimspiele = new BasketballSpieleToFile();
         for (Mannschaft mannschaft : Mannschaft.values()) {
             System.out.println("===========================");
             System.out.println("Mannschaft: "+mannschaft);
