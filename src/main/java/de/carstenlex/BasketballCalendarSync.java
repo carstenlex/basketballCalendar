@@ -15,15 +15,16 @@ package de.carstenlex;// Copyright 2018 Google LLC
 // [START calendar_quickstart]
 
 import com.google.api.services.calendar.model.CalendarListEntry;
-import lombok.extern.java.Log;
+
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.List;
+import java.util.logging.Logger;
 
-@Log
 public class BasketballCalendarSync {
 
+    private static Logger log = Logger.getLogger(BasketballCalendarSync.class.getName());
 
     public static void main(String... args) throws IOException, GeneralSecurityException {
         log.info("Starte Basketballkalender Transfer von Basketplan nach Google-Calendar");

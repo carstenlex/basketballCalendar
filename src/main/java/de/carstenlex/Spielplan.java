@@ -1,9 +1,5 @@
 package de.carstenlex;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
-import lombok.extern.java.Log;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -20,13 +16,16 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static de.carstenlex.Configuration.AUTO_SYNC_MARKER;
 
-@Log
 public class Spielplan {
+
+    private static Logger log = Logger.getLogger(Spielplan.class.getName());
+
 
     public List<Spiel> loadFromBasketplan(Mannschaft mannschaft) throws IOException {
         CloseableHttpClient client = HttpClients.createDefault();
@@ -66,8 +65,6 @@ public class Spielplan {
     }
 }
 
-@Data
-@NoArgsConstructor
 class Spiel {
     LocalDateTime datumUhrzeit;
     String teamHeim;
@@ -75,6 +72,8 @@ class Spiel {
     String halle;
     private Mannschaft mannschaft;
     boolean heimspiel;
+
+    public Spiel(){}
 
     public Spiel(String rawString, Mannschaft mannschaft) throws ParseException {
         datumUhrzeit = extractDate(rawString);
@@ -189,5 +188,30 @@ class Spiel {
         DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm");
         DateTimeFormatter wochentag = DateTimeFormatter.ofPattern("EEEE");
         return wochentag.format(spiel.datumUhrzeit)+";"+dateFormat.format(spiel.datumUhrzeit)+";"+timeFormat.format(spiel.datumUhrzeit)+";"+spiel.teamHeim+";"+spiel.teamAuswaerts+";"+spiel.halle+";;;";
+    }
+
+
+    public boolean isHeimspiel() {
+        return heimspiel;
+    }
+
+    public Mannschaft getMannschaft() {
+        return mannschaft;
+    }
+
+    public String getHalle() {
+        return halle;
+    }
+
+    public String getTeamAuswaerts() {
+        return teamAuswaerts;
+    }
+
+    public String getTeamHeim() {
+        return teamHeim;
+    }
+
+    public LocalDateTime getDatumUhrzeit() {
+        return datumUhrzeit;
     }
 }

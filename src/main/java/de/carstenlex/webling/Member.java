@@ -1,8 +1,7 @@
 package de.carstenlex.webling;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -10,8 +9,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 
-@Data
-@NoArgsConstructor
 public class Member {
     String type;
      String vorname;
@@ -22,6 +19,8 @@ public class Member {
     private String standort;
 
     String status;
+
+    public Member(){}
 
 public boolean maennlich(){
     return geschlecht != null && geschlecht.equalsIgnoreCase("m");
@@ -68,5 +67,38 @@ public int jahrgang(){
         }
 
 
+    }
+
+
+    public String getType() {
+        return type;
+    }
+
+    public String getVorname() {
+        return vorname;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Date getGeburtstag() {
+        return geburtstag;
+    }
+
+    public String getGeschlecht() {
+        return geschlecht;
+    }
+
+    public String getStandort() {
+        return standort;
+    }
+
+    public String getStatus() {
+        return status;
     }
 }

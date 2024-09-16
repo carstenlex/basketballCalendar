@@ -1,7 +1,6 @@
 package de.carstenlex;
 
 import com.google.api.services.calendar.model.CalendarListEntry;
-import lombok.extern.java.Log;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -10,12 +9,15 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static java.util.function.Predicate.not;
 
-@Log
 public class BasketballHeimspieleToFile {
+
+    private static Logger log = Logger.getLogger(BasketballHeimspieleToFile.class.getName());
+
 
     public static final String HEADER ="Tag;Datum;Uhrzeit;Mannschaft;Gegner;Halle;Uhr;Matchblatt;Bemerkung";
 
