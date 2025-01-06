@@ -78,12 +78,12 @@ class Spiel {
     public Spiel(String rawString, Mannschaft mannschaft) throws ParseException {
         datumUhrzeit = extractDate(rawString);
         teamHeim = extractTeamHeim(rawString);
-        if (teamHeim.equalsIgnoreCase("Oberthurgau Pirates")){
+        if (teamHeim.contains("Oberthurgau Pirates")){
             teamHeim = mannschaft.getShortName();
             heimspiel = true;
         }
         teamAuswaerts = extractTeamAuswaerts(rawString);
-        if (teamAuswaerts.equalsIgnoreCase("Oberthurgau Pirates")){
+        if (teamAuswaerts.contains("Oberthurgau Pirates")){
             teamAuswaerts = mannschaft.getShortName();
             heimspiel = false;
         }
