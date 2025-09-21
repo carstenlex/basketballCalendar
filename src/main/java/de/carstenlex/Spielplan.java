@@ -6,6 +6,10 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -14,49 +18,62 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static de.carstenlex.Configuration.AUTO_SYNC_MARKER;
+import static de.carstenlex.Spielplan.*;
 
 public class Spielplan {
 
     private static Logger log = Logger.getLogger(Spielplan.class.getName());
 
+    public static final int SPIELNR = 3;
+    public static final int ORT = 4;
+    public static final int HEIM = 5;
+    public static final int GAST = 6;
 
     public List<Spiel> loadFromBasketplan(Mannschaft mannschaft) throws IOException {
-        CloseableHttpClient client = HttpClients.createDefault();
 
-        String url = Configuration.BASKETPLAN_BASE_SPIELPLAN_PRO_TEAM.replace("#liga#", mannschaft.getLiga() + "").replace("#team", mannschaft.getTeam() + "");
+        String url = Configuration.BASKETPLAN_BASE_SPIELPLAN_PRO_TEAM.replace("#liga#", mannschaft.getLiga() + "").replace("#team#", mannschaft.getTeam() + "");
+        log.info("Call Basketplan for Team "+mannschaft+": "+url);
+        Document basketplanSpieleForLiga = Jsoup.connect(url).get(); // HTML-Seite von Basketplan
+        Elements zeilenMitSpielen = basketplanSpieleForLiga.select("tr[onmouseover]");
 
-        HttpGet request = new HttpGet(url);
-        CloseableHttpResponse response = client.execute(request);
-        HttpEntity entity = response.getEntity();
-        if (entity != null) {
-            String responseAsString = EntityUtils.toString(entity);
+        if (basketplanSpieleForLiga != null) {
             //log.info(responseAsString);
-            return parseSpiele(responseAsString, mannschaft);
+            return parseSpiele(zeilenMitSpielen, mannschaft);
         } else {
             return new ArrayList<>();
         }
     }
 
-    List<Spiel> parseSpiele(String content, Mannschaft mannschaft) {
+    /**
+     *
+     * @param zeilenMitSpielen das ist die Seite im basketplan, die für eine Liga die Spiele aller Mannschaften anzeigt
+     * @param mannschaft
+     * @return
+     */
+    List<Spiel> parseSpiele(Elements zeilenMitSpielen, Mannschaft mannschaft) {
         List<Spiel> liste = new ArrayList<>();
-        // <tr class=\"even upcoming\"><td class=\"scheduleDate\">26.09.2020, 13:30<\/td><td class=\"scheduleHome\">CVJM Frauenfeld<\/td><td class=\"scheduleGuest thisTeam\">Oberthurgau Pirates<\/td><td class=\"scheduleLocation\">Kanti Frauenfeld 1<\/td><td class=\"scheduleResult\">&nbsp;<\/td><\/tr>
 
-        Pattern pattern = Pattern.compile("<tr.+?/tr>");
-        Matcher matcher = pattern.matcher(content);
-        while (matcher.find()) {
-            String oneGame = matcher.group();
-            try {
-                Spiel spiel = new Spiel(oneGame, mannschaft);
-                liste.add(spiel);
-            } catch (ParseException | IllegalArgumentException e) {
-                log.warning(e.getMessage());
+        for (Element element : zeilenMitSpielen) {
+            Elements zellen = element.select("> td"); // alle td in der aktuellen Zeile
+            String heim = zellen.get(HEIM).text();
+            String gast = zellen.get(GAST).text();
+
+            if (heim.contains(mannschaft.getBasketplanName()) || gast.contains(mannschaft.getBasketplanName())) {
+                try {
+                    Spiel spiel = new Spiel(zellen, mannschaft);
+                    liste.add(spiel);
+                } catch (ParseException | IllegalArgumentException e) {
+                    log.warning(e.getMessage());
+                }
             }
         }
         System.out.println("Anzahl Spiele: "+ liste.size());
@@ -66,100 +83,58 @@ public class Spielplan {
 }
 
 class Spiel {
+
+    public static final int SCHIRI_1 = 7;
+    public static final int SCHIRI_2 = 8;
+    public static final int ERGEBNIS = 9;
+    public static final int DATUM_UHRZEIT = 0;
+    public static final String OBERTHURGAU_PIRATES = "Oberthurgau Pirates";
     LocalDateTime datumUhrzeit;
     String teamHeim;
     String teamAuswaerts;
     String halle;
     private Mannschaft mannschaft;
     boolean heimspiel;
+    String spielNr;
 
     public Spiel(){}
 
-    public Spiel(String rawString, Mannschaft mannschaft) throws ParseException {
-        datumUhrzeit = extractDate(rawString);
-        teamHeim = extractTeamHeim(rawString);
-        if (teamHeim.contains("Oberthurgau Pirates")){
+    public Spiel(Elements zellen, Mannschaft mannschaft) throws ParseException {
+
+        spielNr = zellen.get(Spielplan.SPIELNR).text();
+        String ort = zellen.get(ORT).text();
+        String heim = zellen.get(HEIM).text();
+        String gast = zellen.get(GAST).text();
+        String schiri1 = zellen.get(SCHIRI_1).text();
+        String schiri2 = zellen.get(SCHIRI_2).text();
+        String ergebnis = zellen.get(ERGEBNIS).text();
+
+        datumUhrzeit = extractDate(zellen.get(DATUM_UHRZEIT).text());
+        teamHeim = heim;
+        if (teamHeim.contains(OBERTHURGAU_PIRATES)){
             teamHeim = mannschaft.getShortName();
             heimspiel = true;
         }
-        teamAuswaerts = extractTeamAuswaerts(rawString);
-        if (teamAuswaerts.contains("Oberthurgau Pirates")){
+        teamAuswaerts = gast;
+        if (teamAuswaerts.contains(OBERTHURGAU_PIRATES)){
             teamAuswaerts = mannschaft.getShortName();
             heimspiel = false;
         }
-        // teamAuswaerts = anpassungPiratesVSPirates(mannschaft,teamHeim, teamAuswaerts);
 
-        halle = extractHalle(rawString);
+        halle = ort;
 
         this.mannschaft = mannschaft;
     }
 
-    /**
-     * Im Basketplan werden leider nicht die Mannschaftsnamen ausgegeben, sondern nur die Vereinsnamen;
-     * Da unsere H1 und H2 gegeneinander in derselben Liga spielen, kann man sie nicht unterscheiden.
-     * Für diesen Spezialfall machen wir eine Anpassung.
-     * @param mannschaft
-     * @param teamHeim
-     * @param teamAuswaerts
-     * @return
-     */
-    private String anpassungPiratesVSPirates(Mannschaft mannschaft,String teamHeim, String teamAuswaerts) {
-        if (teamHeim ==null || teamAuswaerts == null) {
-            return null;
-        }
 
 
-
-       /* if (teamHeim.equalsIgnoreCase(teamAuswaerts)) {
-            heimspiel = true;
-           *//* if (mannschaft == Mannschaft.HERREN1){
-                return Mannschaft.HERREN_SEN.getShortName();
-            }
-            if (mannschaft == Mannschaft.HERREN_SEN){
-                return Mannschaft.HERREN1.getShortName();
-            }*//*
-            return Mannschaft.HERREN1.getShortName();
-        }*/
-
-        return teamAuswaerts;
-    }
-
-    private String extractTeamHeim(String rawString) {
-        return extractString(rawString, "scheduleHome");
-    }
-
-    private String extractTeamAuswaerts(String rawString) {
-        return extractString(rawString, "scheduleGuest");
-    }
-
-    private String extractHalle(String rawString) {
-        return extractString(rawString, "scheduleLocation");
-    }
-
-    private String extractString(String rawString, String field) {
-        Pattern pattern = Pattern.compile("<td(.*?)" + field + "(.*?)>(.+?)<(.*?)td>");
-        Matcher matcher = pattern.matcher(rawString);
-        if (matcher.find()) {
-            String heimTeam = matcher.group(3);
-            heimTeam = heimTeam.replaceAll("&uuml;", "ü").replaceAll("&ouml;", "ö").replaceAll("&auml;", "ä");
-            //System.out.println(heimTeam);
-            return heimTeam;
-        }
-
-        return "";
-    }
-
-    private LocalDateTime extractDate(String rawString) throws ParseException {
-        Pattern pattern = Pattern.compile("<td(.*?)scheduleDate(.*?)>(.+?)<(.*?)td>");
-        Matcher matcher = pattern.matcher(rawString);
-        if (matcher.find()) {
-            String dateTime = matcher.group(3);
+    private LocalDateTime extractDate(String datumZeit) throws ParseException {
             // System.out.println(dateTime);
-            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm");
-            return LocalDateTime.parse(dateTime, dtf);
-        } else {
-            throw new IllegalArgumentException("Kein gültiges Spiel: " + rawString);
-        }
+        DateTimeFormatter dtf = new DateTimeFormatterBuilder()
+                .parseCaseInsensitive()
+                .appendPattern("dd.MM.yy HH:mm")
+                .toFormatter(Locale.GERMAN);
+            return LocalDateTime.parse(datumZeit.substring(3), dtf); // Wochentag kann irgendwie nicht parsed werden, dann nehmen wir ab INdex 3 das Datum
 
     }
 

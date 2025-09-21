@@ -1,5 +1,8 @@
 package de.carstenlex;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -14,7 +17,8 @@ public class HeimspieleTest extends BaseTest{
 
         Spielplan spielplan = new Spielplan();
         System.out.println("parse spiele");
-        List<Spiel> spiele = spielplan.parseSpiele(content, Mannschaft.HERREN1);
+        Elements document = Jsoup.parse(content).select("tr"); //FIXME
+        List<Spiel> spiele = spielplan.parseSpiele(document, Mannschaft.HERREN1);
 
         BasketballSpieleToFile heimspiele = new BasketballSpieleToFile();
         heimspiele.addHeimspiele(spiele);
